@@ -1,12 +1,14 @@
 __author__ = 'Administrator'
 
 import wx
+import os
 import device
 import binascii
 import threading
 import rs232_UI
 import string
 import filestore
+import time
 
 #configuration file
 config = "conf.ini"
@@ -25,30 +27,36 @@ class MyApp(rs232_UI.main):
         self.recv_data = ""
         self.portlist = ()
         self.reflash_port()
-        dataConf = filestore.loadConf(config)
-        print("configuration:",dataConf)
-        self.string1.SetValue(dataConf[0])
-        self.string2.SetValue(dataConf[1])
-        self.string3.SetValue(dataConf[2])
-        self.string4.SetValue(dataConf[3])
-        self.string5.SetValue(dataConf[4])
-        self.string6.SetValue(dataConf[5])
+        self.SendLoopFlag = False
+        self.SendLoopTime = 0
+        self.timer = wx.Timer(self)
+        self.send_count = 0
+        self.read_count = 0
+        self.TPsend_chk.SetValue(False)
+        self.RN_chk.SetValue(False)
+        dataConfig = filestore.loadConfig(config)
+        print("configuration:",dataConfig)
+        self.Baudrate_cmb.SetValue(dataConfig['baud'])
+        self.Bytesize_cmb.SetValue(dataConfig['data'])
+        self.Stopbits_cmb.SetValue(dataConfig['stop'])
+        self.string1.SetValue(dataConfig['str1'])
+        self.string2.SetValue(dataConfig['str2'])
+        self.string3.SetValue(dataConfig['str3'])
+        self.string4.SetValue(dataConfig['str4'])
+        self.string5.SetValue(dataConfig['str5'])
+        self.string6.SetValue(dataConfig['str6'])
+
     def StartTimer(self,cb,interval):
-        self.StopTimer(cb)
+        self.Bind(wx.EVT_TIMER,cb,self.timer)
+        self.timer.Start(interval)
 
-        t = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER,cb,t)
-
-        self.timers[t] = {"cb":cb,"t":t}
-
-        t.Start(interval,True)
-
-    def StopTimer(self,cb):
-        for k,v in self.timers.items():
-            if v["cb"] == cb:
-                v["t"].Stop()
-                del self.timers[k]
-                break
+    def StopTimer(self):
+        self.timer.Stop()
+        #for k,v in self.timers.items():
+        #    if v["cb"] == cb:
+        #        v["t"].Stop()
+        #        del self.timers[k]
+        #        break
             #end if
         # #end for
 
@@ -59,14 +67,15 @@ class MyApp(rs232_UI.main):
              self.Port_cmb.Clear()
              self.Port_cmb.Append(list)
              #self.frame.port.SetValue(list[0])
-
-         self.reflash_thread = threading.Thread(target=self.reflash_port)
-         self.reflash_thread.setDaemon(True)
-         self.reflash_thread.start()
+         #self.reflash_thread = threading.Thread(target=self.reflash_port)
+         #self.reflash_thread.setDaemon(True)
+         #self.reflash_thread.start()
+    def PortDropdown(self,event):
+        self.reflash_port()
 
     def Open_port(self,event):
          #print('func open_port event=',event)
-         if self.Port_cmb.GetValue() == None:
+         if self.Port_cmb.GetCurrentSelection() == -1:
              return 0
          openname = self.Port_but.GetLabel()
          try:
@@ -119,15 +128,21 @@ class MyApp(rs232_UI.main):
          #end if
 
     def read(self):
-         while self.ser.alive:
-             n = self.ser.l_serial.inWaiting()
-             if n:
-                 msg = self.ser.l_serial.read(n)
-                 m = bytes_str(msg)
-                 print(msg)
-                 m = self.Recv_txt.GetValue() + m
-                 self.Recv_txt.SetValue(m)
-                 self.Recv_txt.SetInsertionPointEnd()
+             while self.ser.alive:
+                 try:
+                     n = self.ser.l_serial.inWaiting()
+                     if n:
+                         msg = self.ser.l_serial.read(n)
+                         m = bytes_str(msg)
+                         #print(msg)
+                         m = self.Recv_txt.GetValue() + m
+                         self.Recv_txt.SetValue(m)
+                         self.Recv_txt.SetInsertionPointEnd()
+                         self.read_count = self.read_count + n
+                         self.Receive_num.SetLabel(str(self.read_count))
+                     time.sleep(0.001)
+                 except:
+                     raise
 
              #end if
          #end while
@@ -135,9 +150,25 @@ class MyApp(rs232_UI.main):
     def write(self,send_data):
         if self.ser:
             send_data = bytearray(send_data,'utf-8')
-            #print("ddd send_data=",send_data)
+            self.send_count = self.send_count + len(send_data)
+            self.Send_num.SetLabel(str(self.send_count))
             self.ser.l_serial.write(send_data)
         #end if
+
+    def SendLoopClick( self, event ):
+        if (self.TPsend_chk.GetValue() == True) and (self.Second_txt.GetValue().isdigit() == True):
+            self.SendLoopFlag = True
+            self.SendLoopTime = int(self.Second_txt.GetValue())
+        else:
+            self.TPsend_chk.SetValue(False)
+            self.SendLoopFlag = False
+            self.SendLoopTime = 0
+
+    def TextSecondChange(self,event):
+        if self.Second_txt.GetValue().isdigit() == False:
+            self.TPsend_chk.SetValue(False)
+            self.SendLoopFlag = False
+            self.SendLoopTime = 0
 
     def bt_send(self,event):
         send_type = isinstance(event,wx._core.CommandEvent)
@@ -156,13 +187,13 @@ class MyApp(rs232_UI.main):
 
                 tmp = self.Second_txt.GetValue()
                 self.write(send_data)
-                if self.TPsend_chk.GetValue() == True and tmp != '' :
+                if (self.TPsend_chk.GetValue() == True) and (tmp != '') and (self.timer.IsRunning() == False) :
                      print("StartTimer")
                      self.Send_but.SetLabel(wxT("暂停"))
                      self.StartTimer(self.bt_send,int(tmp))
                 #end if
             else:
-                self.StopTimer(self.bt_send)
+                self.StopTimer()
                 self.Send_but.SetLabel(wxT("发送"))
             #end if else
         #end if
@@ -214,27 +245,41 @@ class MyApp(rs232_UI.main):
     def strButton1Click(self,event):
         tmp = self.string1.GetValue()
         self.Send_txt.SetValue(tmp)
-        filestore.writeConf(config,"str1",tmp)
+        filestore.writeConfig(config,"str1",tmp)
     def strButton2Click(self,event):
         tmp = self.string2.GetValue()
         self.Send_txt.SetValue(tmp)
-        filestore.writeConf(config,"str2",tmp)
+        filestore.writeConfig(config,"str2",tmp)
     def strButton3Click(self,event):
         tmp = self.string3.GetValue()
         self.Send_txt.SetValue(tmp)
-        filestore.writeConf(config,"str3",tmp)
+        filestore.writeConfig(config,"str3",tmp)
     def strButton4Click(self,event):
         tmp = self.string4.GetValue()
         self.Send_txt.SetValue(tmp)
-        filestore.writeConf(config,"str4",tmp)
+        filestore.writeConfig(config,"str4",tmp)
     def strButton5Click(self,event):
         tmp = self.string5.GetValue()
         self.Send_txt.SetValue(tmp)
-        filestore.writeConf(config,"str5",tmp)
+        filestore.writeConfig(config,"str5",tmp)
     def strButton6Click(self,event):
         tmp = self.string6.GetValue()
         self.Send_txt.SetValue(tmp)
-        filestore.writeConf(config,"str6",tmp)
+        filestore.writeConfig(config,"str6",tmp)
+    def openClick(self,event):
+        dlg = wx.FileDialog(self, "打开",
+                    os.getcwd(),
+                    style = 0)
+        if dlg.ShowModal() == (wx.ID_OK):
+            self.filename = dlg.GetPath()
+            print("Open file Ok:",self.filename)
+            self.Statue_lab.SetLabel("已打开："+self.filename)
+        dlg.Destroy()
+    def clearClick(self,event):
+        self.send_count = 0
+        self.read_count = 0
+        self.Send_num.SetLabel(str(self.send_count))
+        self.Receive_num.SetLabel(str(self.read_count))
 
 
 

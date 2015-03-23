@@ -17,7 +17,7 @@ import wx
 class main ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"sscomplus v1.01", pos = wx.DefaultPosition, size = wx.Size( 778,496 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"sscomplus v1.0", pos = wx.DefaultPosition, size = wx.Size( 778,496 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		#self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		self.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
@@ -71,7 +71,8 @@ class main ( wx.Frame ):
 		bSizer5.Add( self.Baudrate_lab, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		Baudrate_cmbChoices = [ u"110", u"300", u"600", u"1200", u"2400", u"4800", u"9600", u"14400", u"19200", u"38400", u"56000", u"57600", u"115200", u"128000", u"256000", u"230400", u"460800", u"921600" ]
-		self.Baudrate_cmb = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"9600", wx.DefaultPosition, wx.DefaultSize, Baudrate_cmbChoices, 0 )
+		self.Baudrate_cmb = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"1200", wx.DefaultPosition, wx.DefaultSize, Baudrate_cmbChoices, 0 )
+		self.Baudrate_cmb.SetSelection( 3 )
 		bSizer5.Add( self.Baudrate_cmb, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		
@@ -187,29 +188,23 @@ class main ( wx.Frame ):
 		
 		bSizer251 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_staticText80 = wx.StaticText( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText80.Wrap( -1 )
-		bSizer251.Add( self.m_staticText80, 1, wx.ALL|wx.EXPAND, 5 )
-		
 		self.TPsend_chk = wx.CheckBox( self.m_panel1, wx.ID_ANY, u"循环发送", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer251.Add( self.TPsend_chk, 0, wx.ALL, 5 )
+		self.TPsend_chk.SetValue(True) 
+		bSizer251.Add( self.TPsend_chk, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		self.Second_txt = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer251.Add( self.Second_txt, 0, wx.RIGHT|wx.LEFT, 5 )
+		bSizer251.Add( self.Second_txt, 0, wx.RIGHT|wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		self.Sec_lab = wx.StaticText( self.m_panel1, wx.ID_ANY, u"ms/次", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.Sec_lab.Wrap( -1 )
-		bSizer251.Add( self.Sec_lab, 0, wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		bSizer251.Add( self.Sec_lab, 0, wx.TOP|wx.RIGHT|wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		self.HEXsend_chk = wx.CheckBox( self.m_panel1, wx.ID_ANY, u"HEX发送", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer251.Add( self.HEXsend_chk, 0, wx.ALL, 5 )
+		bSizer251.Add( self.HEXsend_chk, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		self.RN_chk = wx.CheckBox( self.m_panel1, wx.ID_ANY, u"新行", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.RN_chk.SetValue(True) 
-		bSizer251.Add( self.RN_chk, 0, wx.ALL, 5 )
-		
-		self.Extend_chk = wx.CheckBox( self.m_panel1, wx.ID_ANY, u"扩展", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer251.Add( self.Extend_chk, 0, wx.ALL, 5 )
+		bSizer251.Add( self.RN_chk, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
 		
 		bSizer531.Add( bSizer251, 1, wx.EXPAND, 5 )
@@ -312,11 +307,32 @@ class main ( wx.Frame ):
 		
 		bSizer24.Add( bSizer22, 1, wx.EXPAND, 5 )
 		
-		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel1, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
+		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel1, wx.ID_ANY, wx.EmptyString ), wx.HORIZONTAL )
 		
 		self.Statue_lab = wx.StaticText( self.m_panel1, wx.ID_ANY, u"准备", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.Statue_lab.Wrap( -1 )
-		sbSizer3.Add( self.Statue_lab, 0, wx.ALL, 5 )
+		sbSizer3.Add( self.Statue_lab, 13, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.Send_lab = wx.StaticText( self.m_panel1, wx.ID_ANY, u"已发送：", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Send_lab.Wrap( -1 )
+		sbSizer3.Add( self.Send_lab, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.Send_num = wx.StaticText( self.m_panel1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Send_num.Wrap( -1 )
+		sbSizer3.Add( self.Send_num, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.Receive_lab = wx.StaticText( self.m_panel1, wx.ID_ANY, u"已接收：", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Receive_lab.Wrap( -1 )
+		sbSizer3.Add( self.Receive_lab, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.Receive_num = wx.StaticText( self.m_panel1, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Receive_num.Wrap( -1 )
+		sbSizer3.Add( self.Receive_num, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.Clear_but = wx.Button( self.m_panel1, wx.ID_ANY, u"清零", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Clear_but.SetMinSize( wx.Size( 50,25 ) )
+		
+		sbSizer3.Add( self.Clear_but, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		
 		bSizer24.Add( sbSizer3, 0, wx.EXPAND, 5 )
@@ -325,7 +341,7 @@ class main ( wx.Frame ):
 		self.m_panel1.SetSizer( bSizer24 )
 		self.m_panel1.Layout()
 		bSizer24.Fit( self.m_panel1 )
-		bSizer25.Add( self.m_panel1, 1, wx.EXPAND |wx.ALL, 5 )
+		bSizer25.Add( self.m_panel1, 1, wx.EXPAND|wx.ALL, 5 )
 		
 		
 		self.SetSizer( bSizer25 )
@@ -334,11 +350,14 @@ class main ( wx.Frame ):
 		self.Centre( wx.BOTH )
 		
 		# Connect Events
+		self.Port_cmb.Bind( wx.EVT_COMBOBOX_DROPDOWN, self.PortDropdown )
 		self.Port_but.Bind( wx.EVT_BUTTON, self.Open_port )
 		self.DTR_chk.Bind( wx.EVT_CHECKBOX, self.CH_DTR )
 		self.RTC_chk.Bind( wx.EVT_CHECKBOX, self.CH_RTC )
 		self.Hexrecv_chk.Bind( wx.EVT_CHECKBOX, self.bt_hexrecv )
 		self.Clrrecv_but.Bind( wx.EVT_BUTTON, self.bt_clrrecv )
+		self.TPsend_chk.Bind( wx.EVT_CHECKBOX, self.SendLoopClick )
+		self.Second_txt.Bind( wx.EVT_TEXT, self.TextSecondChange )
 		self.HEXsend_chk.Bind( wx.EVT_CHECKBOX, self.bt_hexsend )
 		self.Clrsend_but.Bind( wx.EVT_BUTTON, self.bt_clrsend )
 		self.Send_but.Bind( wx.EVT_BUTTON, self.bt_send )
@@ -348,12 +367,16 @@ class main ( wx.Frame ):
 		self.strButton4.Bind( wx.EVT_BUTTON, self.strButton4Click )
 		self.strButton5.Bind( wx.EVT_BUTTON, self.strButton5Click )
 		self.strButton6.Bind( wx.EVT_BUTTON, self.strButton6Click )
+		self.Clear_but.Bind( wx.EVT_BUTTON, self.clearClick )
 	
 	def __del__( self ):
 		pass
 	
 	
 	# Virtual event handlers, overide them in your derived class
+	def PortDropdown( self, event ):
+		event.Skip()
+	
 	def Open_port( self, event ):
 		event.Skip()
 	
@@ -367,6 +390,12 @@ class main ( wx.Frame ):
 		event.Skip()
 	
 	def bt_clrrecv( self, event ):
+		event.Skip()
+	
+	def SendLoopClick( self, event ):
+		event.Skip()
+	
+	def TextSecondChange( self, event ):
 		event.Skip()
 	
 	def bt_hexsend( self, event ):
@@ -394,6 +423,9 @@ class main ( wx.Frame ):
 		event.Skip()
 	
 	def strButton6Click( self, event ):
+		event.Skip()
+	
+	def clearClick( self, event ):
 		event.Skip()
 	
 
