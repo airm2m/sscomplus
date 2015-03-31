@@ -25,7 +25,7 @@ def loadConfig(path):
             line = file.readline()
             if not line:
                 break
-            if line[0:4] == "baud":
+            elif line[0:4] == "baud":
                 dataConfig.update({"baud":line[5:-1]})
             elif line[0:4] == "data":
                 dataConfig.update({"data":line[5:-1]})
@@ -43,6 +43,14 @@ def loadConfig(path):
                 dataConfig.update({"str5":line[5:-1]})
             elif line[0:4] == "str6":
                 dataConfig.update({"str6":line[5:-1]})
+            elif line[0:4] == "str7":
+                dataConfig.update({"str7":line[5:-1]})
+            elif line[0:4] == "str8":
+                dataConfig.update({"str8":line[5:-1]})
+            elif line[0:4] == "str9":
+                dataConfig.update({"str9":line[5:-1]})
+            elif line[0:4] == "strA":
+                dataConfig.update({"strA":line[5:-1]})
     finally:
         file.close()
     return dataConfig

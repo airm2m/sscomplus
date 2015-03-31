@@ -9,9 +9,15 @@ import rs232_UI
 import string
 import filestore
 import time
-
+import host
 #configuration file
 config = "conf.ini"
+
+def call_after(func):
+    def _wrapper(*args, **kwargs):
+        return wx.CallAfter(func, *args, **kwargs)
+    return _wrapper
+
 def wxT(x):
     return x
 
@@ -20,6 +26,24 @@ def bytes_str(b_str):
     for n in b_str:
         c_str += chr(n)
     return c_str
+
+def bytes_hex(b_str):
+    h_str = ""
+    for n in b_str:
+        h_str += '{0:02X}'.format(n) + " "
+        #h_str += hex(n) + " "
+    return h_str
+def hexstr_bytes(str):
+    i =0
+    t = ''
+    bytes = bytearray()
+    for n in str:
+        i = i + 1
+        t += n
+        if len(t) == 2 or i == len(str):
+            bytes.append(int(t.zfill(2),16))
+            t = ''
+    return bytes
 
 class MyApp(rs232_UI.main):
     def __init__(self):
@@ -32,8 +56,18 @@ class MyApp(rs232_UI.main):
         self.timer = wx.Timer(self)
         self.send_count = 0
         self.read_count = 0
+        self.SerialStatus = 'close'
+        self.HexDisplay = False
+        self.Hexrecv_chk.SetValue(False)
+        self.HexSend = False
+        self.HEXsend_chk.SetValue(False)
+        self.NewLine = False
+        self.RN_chk.SetValue(False)
         self.TPsend_chk.SetValue(False)
         self.RN_chk.SetValue(False)
+        self.HOST.SetValue(False)
+        self.HOST_Protocol = False
+        self.ButtonStatus = 'send'
         dataConfig = filestore.loadConfig(config)
         print("configuration:",dataConfig)
         self.Baudrate_cmb.SetValue(dataConfig['baud'])
@@ -45,41 +79,47 @@ class MyApp(rs232_UI.main):
         self.string4.SetValue(dataConfig['str4'])
         self.string5.SetValue(dataConfig['str5'])
         self.string6.SetValue(dataConfig['str6'])
+        self.string7.SetValue(dataConfig['str7'])
+        self.string8.SetValue(dataConfig['str8'])
+        self.string9.SetValue(dataConfig['str9'])
+        self.string10.SetValue(dataConfig['strA'])
 
     def StartTimer(self,cb,interval):
         self.Bind(wx.EVT_TIMER,cb,self.timer)
         self.timer.Start(interval)
-
     def StopTimer(self):
         self.timer.Stop()
-        #for k,v in self.timers.items():
-        #    if v["cb"] == cb:
-        #        v["t"].Stop()
-        #        del self.timers[k]
-        #        break
-            #end if
-        # #end for
-
     def reflash_port(self):
          list = device.reflash_port()
          if len(self.portlist) != len(list):
              self.portlist = list[:]
              self.Port_cmb.Clear()
              self.Port_cmb.Append(list)
-             #self.frame.port.SetValue(list[0])
-         #self.reflash_thread = threading.Thread(target=self.reflash_port)
-         #self.reflash_thread.setDaemon(True)
-         #self.reflash_thread.start()
     def PortDropdown(self,event):
         self.reflash_port()
+    def GetData(self):
+        SendData = self.Send_txt.GetValue()
+        if self.HOST_Protocol:
+            SendData = bytearray(SendData,'utf-8')
+            SendData = host.urat_encode(SendData)
+        elif self.NewLine and self.HexSend:
+            SendData = hexstr_bytes(SendData)
+            SendData.append(13)
+            SendData.append(10)
+        elif not self.NewLine and self.HexSend:
+            SendData = hexstr_bytes(SendData)
+        elif self.NewLine and not self.HexSend:
+            SendData += '\r\n'
+            SendData = bytearray(SendData,'utf-8')
+        else:
+            SendData = bytearray(SendData,'utf-8')
+        return SendData
 
     def Open_port(self,event):
-         #print('func open_port event=',event)
          if self.Port_cmb.GetCurrentSelection() == -1:
              return 0
-         openname = self.Port_but.GetLabel()
          try:
-             if openname == wxT("打开串口"):
+             if self.SerialStatus == 'close':
                  self.ser = device.MyCom(Port      =   self.Port_cmb.GetValue(),
                                          BaudRate  =   self.Baudrate_cmb.GetValue(),
                                          ByteSize  =   self.Bytesize_cmb.GetValue(),
@@ -87,72 +127,75 @@ class MyApp(rs232_UI.main):
                                          Stopbits  =   self.Stopbits_cmb.GetValue())
                  if self.ser.start():
                      self.ser.waitEnd = threading.Event()
-                     tmp_flow = self.Flow_cmb.GetValue()
-                     print("tmp_flow=",tmp_flow)
-                     if tmp_flow == "HW":
+                     flow = self.Flow_cmb.GetValue()
+                     if flow == "HW":
                          self.ser.l_serial.rtscts = True
                          self.ser.l_serial.xonxoff = False
-                     elif tmp_flow == "SW":
+                     elif flow == "SW":
                          self.ser.l_serial.xonxoff = True
                          self.ser.l_serial.rtscts = False
-                     elif tmp_flow == "OFF":
+                     elif flow == "OFF":
                          self.ser.l_serial.rtscts = False
                          self.ser.l_serial.xonxoff = False
-                     #end if
-
-                     #print("##########self.ser.l_serial=",self.ser.l_serial)
                      statue_name = self.ser.l_serial.port + wxT("已打开")
                      self.Statue_lab.SetLabel(statue_name)
                      self.Port_but.SetLabel(wxT("关闭串口"))
+                     self.SerialStatus = 'open'
                      self.read_thread = threading.Thread(target=self.read)
                      self.read_thread.setDaemon(True)
                      self.read_thread.start()
                  else:
                      statue_name = self.ser.l_serial.port + wxT("打开失败")
                      self.Statue_lab.SetLabel(statue_name)
-                     print("start fail")
                      self.ser.stop()
-                 #end if
-             else:
-                 print("SetStopEvent")
-                 self.Statue_lab.SetLabel(wxT("准备"))
+             elif self.SerialStatus == 'open':
                  self.ser.SetStopEvent()
                  self.read_thread.join()
+                 self.Statue_lab.SetLabel(wxT("准备"))
                  self.Port_but.SetLabel(wxT("打开串口"))
-                 print("close wenzi")
+                 self.SerialStatus = 'close'
          except Exception as ex:
-                 print("Exception")
-                 statue_name = self.Port_cmb.GetValue() + wxT("打开失败")
-                 self.Statue_lab.SetLabel(statue_name)
-                 self.Port_but.SetLabel(wxT("关闭串口"))
-         #end if
+             print("Exception:Open_port()")
+             statue_name = self.Port_cmb.GetValue() + wxT("打开失败")
+             self.Statue_lab.SetLabel(statue_name)
 
+    @call_after
+    def UpdateReceiveTxt(self,receive,count):
+        self.Recv_txt.AppendText(receive)
+        self.Receive_num.SetLabel(str(count))
     def read(self):
+        try:
              while self.ser.alive:
-                 try:
-                     n = self.ser.l_serial.inWaiting()
-                     if n:
-                         msg = self.ser.l_serial.read(n)
+                 n = self.ser.l_serial.inWaiting()
+                 if n:
+                     msg = self.ser.l_serial.read(n)
+                     if self.HOST_Protocol:
+                         msg = host.urat_decode(msg)
+                         if msg == None:
+                             continue
+                     if self.HexDisplay == True:
+                         m = bytes_hex(msg)
+                     else:
                          m = bytes_str(msg)
-                         #print(msg)
-                         m = self.Recv_txt.GetValue() + m
-                         self.Recv_txt.SetValue(m)
-                         self.Recv_txt.SetInsertionPointEnd()
-                         self.read_count = self.read_count + n
-                         self.Receive_num.SetLabel(str(self.read_count))
-                     time.sleep(0.001)
-                 except:
-                     raise
+                     self.read_count = self.read_count + n
+                     self.UpdateReceiveTxt(m,self.read_count)
+                 time.sleep(0.001)
+                 #end if
+             #end while
+        except:
+             print("fault:read()")
+             raise
 
-             #end if
-         #end while
-
-    def write(self,send_data):
-        if self.ser:
-            send_data = bytearray(send_data,'utf-8')
-            self.send_count = self.send_count + len(send_data)
-            self.Send_num.SetLabel(str(self.send_count))
-            self.ser.l_serial.write(send_data)
+    def write(self,event):
+        try:
+            if self.ser:
+                send_data = self.GetData()
+                self.send_count = self.send_count + len(send_data)
+                self.Send_num.SetLabel(str(self.send_count))
+                self.ser.l_serial.write(send_data)
+        except:
+            print("fault:write()")
+            raise
         #end if
 
     def SendLoopClick( self, event ):
@@ -170,62 +213,55 @@ class MyApp(rs232_UI.main):
             self.SendLoopFlag = False
             self.SendLoopTime = 0
 
+    def HostClick(self,event):
+        if self.HOST.GetValue() == True:
+            self.HOST_Protocol = True
+        else:
+            self.HOST_Protocol = False
+
+    def ExtraFunClick(self,event):
+        if self.Extra_func.GetValue() == True:
+            self.Extra_panel.Show()
+            self.Layout()
+        else:
+            self.Extra_panel.Hide()
+            self.Layout()
+
     def bt_send(self,event):
-        send_type = isinstance(event,wx._core.CommandEvent)
-        #print("event=",event,isinstance(event,wx._core.CommandEvent))
-        send_data = self.Send_txt.GetValue()
-        send_name = self.Send_but.GetLabel()
-        print(send_name,send_type,not (send_name == wxT("暂停") and send_type == True))
-        if self.Port_but.GetLabel() == wxT("关闭串口") and send_data != '' :
-            if not (send_name == wxT("暂停") and send_type == True):
-                if self.HEXsend_chk.GetValue() == True:
-                    send_data = binascii.unhexlify(send_data).decode()
-                #end if
-                if self.RN_chk.GetValue() == True:
-                    send_data = send_data + "\r\n"
-                #end if
-
-                tmp = self.Second_txt.GetValue()
-                self.write(send_data)
-                if (self.TPsend_chk.GetValue() == True) and (tmp != '') and (self.timer.IsRunning() == False) :
-                     print("StartTimer")
-                     self.Send_but.SetLabel(wxT("暂停"))
-                     self.StartTimer(self.bt_send,int(tmp))
-                #end if
-            else:
-                self.StopTimer()
-                self.Send_but.SetLabel(wxT("发送"))
-            #end if else
-        #end if
-
-
+        SendData = self.Send_txt.GetValue()
+        if SendData == '' or (not self.ser.alive):
+            return
+        if self.ButtonStatus == 'pause':
+            self.StopTimer()
+            self.ButtonStatus = 'send'
+            self.Send_but.SetLabel(wxT("发送"))
+        elif self.ButtonStatus == 'send' and self.SendLoopFlag:
+            print('send loop')
+            self.StartTimer(self.write,self.SendLoopTime)
+            self.ButtonStatus = 'pause'
+            self.Send_but.SetLabel(wxT("暂停"))
+        else:
+            self.write(None)
 
     def bt_clrsend(self,event):
         self.Send_txt.SetValue("")
     def bt_clrrecv(self,event):
         self.Recv_txt.SetValue("")
     def bt_hexsend(self,event):
-        #print("bt_hexsend event",event,self.HEXsend_chk.GetValue())
         if self.HEXsend_chk.GetValue() == True:
-            tmp = self.Send_txt.GetValue()
-            tmp = binascii.hexlify(tmp.encode()).decode()
-            self.Send_txt.SetValue(tmp)
+            self.HexSend = True
         else:
-            tmp = self.Send_txt.GetValue()
-            tmp = binascii.unhexlify(tmp).decode()
-            self.Send_txt.SetValue(tmp)
-        #end if
+            self.HexSend = False
     def bt_hexrecv(self,event):
-        #print("bt_hexsend event",event)
         if self.Hexrecv_chk.GetValue() == True:
-            tmp = self.Recv_txt.GetValue()
-            tmp = binascii.hexlify(tmp.encode()).decode()
-            self.Recv_txt.SetValue(tmp)
+            self.HexDisplay = True
         else:
-            tmp = self.Recv_txt.GetValue()
-            tmp = binascii.unhexlify(tmp).decode()
-            self.Recv_txt.SetValue(tmp)
-        #end if
+            self.HexDisplay = False
+    def NewLineClick( self, event ):
+        if self.RN_chk.GetValue() == True:
+            self.NewLine = True
+        else:
+            self.NewLine = False
     def CH_DTR(self,event):
         if self.Port_but.GetLabel() == wxT("打开串口"):
             return
@@ -249,6 +285,7 @@ class MyApp(rs232_UI.main):
     def strButton2Click(self,event):
         tmp = self.string2.GetValue()
         self.Send_txt.SetValue(tmp)
+        print(tmp)
         filestore.writeConfig(config,"str2",tmp)
     def strButton3Click(self,event):
         tmp = self.string3.GetValue()
@@ -266,6 +303,22 @@ class MyApp(rs232_UI.main):
         tmp = self.string6.GetValue()
         self.Send_txt.SetValue(tmp)
         filestore.writeConfig(config,"str6",tmp)
+    def strButton7Click(self,event):
+        tmp = self.string7.GetValue()
+        self.Send_txt.SetValue(tmp)
+        filestore.writeConfig(config,"str7",tmp)
+    def strButton8Click(self,event):
+        tmp = self.string8.GetValue()
+        self.Send_txt.SetValue(tmp)
+        filestore.writeConfig(config,"str8",tmp)
+    def strButton9Click(self,event):
+        tmp = self.string9.GetValue()
+        self.Send_txt.SetValue(tmp)
+        filestore.writeConfig(config,"str9",tmp)
+    def strButton10Click(self,event):
+        tmp = self.string10.GetValue()
+        self.Send_txt.SetValue(tmp)
+        filestore.writeConfig(config,"strA",tmp)
     def openClick(self,event):
         dlg = wx.FileDialog(self, "打开",
                     os.getcwd(),

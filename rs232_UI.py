@@ -17,7 +17,7 @@ import wx
 class main ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"sscomplus v1.0", pos = wx.DefaultPosition, size = wx.Size( 778,496 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"sscomplus v1.0", pos = wx.DefaultPosition, size = wx.Size( 800,570 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		#self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		self.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
@@ -33,20 +33,38 @@ class main ( wx.Frame ):
 		
 		bSport = wx.BoxSizer( wx.VERTICAL )
 		
+		bSizer27 = wx.BoxSizer( wx.VERTICAL )
+		
 		self.Port_lab = wx.StaticText( self.m_panel1, wx.ID_ANY, u"串口号", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.Port_lab.Wrap( -1 )
 		self.Port_lab.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
 		
-		bSport.Add( self.Port_lab, 1, wx.ALL|wx.EXPAND, 5 )
+		bSizer27.Add( self.Port_lab, 1, wx.ALL|wx.EXPAND, 5 )
+		
+		
+		bSport.Add( bSizer27, 1, wx.EXPAND, 5 )
+		
+		bSizer28 = wx.BoxSizer( wx.VERTICAL )
 		
 		Port_cmbChoices = []
 		self.Port_cmb = wx.ComboBox( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, Port_cmbChoices, 0 )
 		self.Port_cmb.SetFont( wx.Font( 20, 70, 90, 90, False, wx.EmptyString ) )
+		self.Port_cmb.SetMaxSize( wx.Size( -1,30 ) )
 		
-		bSport.Add( self.Port_cmb, 1, wx.ALL|wx.EXPAND, 5 )
+		bSizer28.Add( self.Port_cmb, 1, wx.ALL|wx.EXPAND, 5 )
+		
+		
+		bSport.Add( bSizer28, 2, wx.EXPAND, 5 )
+		
+		bSizer30 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.Port_but = wx.Button( self.m_panel1, wx.ID_ANY, u"打开串口", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSport.Add( self.Port_but, 1, wx.ALL|wx.EXPAND, 5 )
+		self.Port_but.SetMaxSize( wx.Size( -1,40 ) )
+		
+		bSizer30.Add( self.Port_but, 1, wx.ALL|wx.EXPAND, 5 )
+		
+		
+		bSport.Add( bSizer30, 2, wx.EXPAND, 5 )
 		
 		bSizer23 = wx.BoxSizer( wx.HORIZONTAL )
 		
@@ -57,7 +75,7 @@ class main ( wx.Frame ):
 		bSizer23.Add( self.RTC_chk, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		
-		bSport.Add( bSizer23, 1, wx.EXPAND, 5 )
+		bSport.Add( bSizer23, 2, wx.EXPAND, 5 )
 		
 		
 		bSleft.Add( bSport, 1, wx.EXPAND, 5 )
@@ -73,6 +91,8 @@ class main ( wx.Frame ):
 		Baudrate_cmbChoices = [ u"110", u"300", u"600", u"1200", u"2400", u"4800", u"9600", u"14400", u"19200", u"38400", u"56000", u"57600", u"115200", u"128000", u"256000", u"230400", u"460800", u"921600" ]
 		self.Baudrate_cmb = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"1200", wx.DefaultPosition, wx.DefaultSize, Baudrate_cmbChoices, 0 )
 		self.Baudrate_cmb.SetSelection( 3 )
+		self.Baudrate_cmb.SetMaxSize( wx.Size( -1,25 ) )
+		
 		bSizer5.Add( self.Baudrate_cmb, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		
@@ -86,6 +106,8 @@ class main ( wx.Frame ):
 		
 		Bytesize_cmbChoices = [ u"5", u"6", u"7", u"8" ]
 		self.Bytesize_cmb = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"8", wx.DefaultPosition, wx.DefaultSize, Bytesize_cmbChoices, 0 )
+		self.Bytesize_cmb.SetMaxSize( wx.Size( -1,25 ) )
+		
 		bSizer51.Add( self.Bytesize_cmb, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		
@@ -99,6 +121,8 @@ class main ( wx.Frame ):
 		
 		Stopbits_cmbChoices = [ u"1", u"1.5", u"2" ]
 		self.Stopbits_cmb = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"1", wx.DefaultPosition, wx.DefaultSize, Stopbits_cmbChoices, 0 )
+		self.Stopbits_cmb.SetMaxSize( wx.Size( -1,25 ) )
+		
 		bSizer52.Add( self.Stopbits_cmb, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		
@@ -112,6 +136,8 @@ class main ( wx.Frame ):
 		
 		Parity_cmbChoices = [ u"N", u"O", u"E", u"M", u"S" ]
 		self.Parity_cmb = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"N", wx.DefaultPosition, wx.DefaultSize, Parity_cmbChoices, 0 )
+		self.Parity_cmb.SetMaxSize( wx.Size( -1,25 ) )
+		
 		bSizer53.Add( self.Parity_cmb, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		
@@ -126,6 +152,8 @@ class main ( wx.Frame ):
 		Flow_cmbChoices = [ u"HW", u"SW", u"OFF" ]
 		self.Flow_cmb = wx.ComboBox( self.m_panel1, wx.ID_ANY, u"OFF", wx.DefaultPosition, wx.DefaultSize, Flow_cmbChoices, 0 )
 		self.Flow_cmb.SetSelection( 2 )
+		self.Flow_cmb.SetMaxSize( wx.Size( -1,25 ) )
+		
 		bSizer54.Add( self.Flow_cmb, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		
@@ -178,9 +206,10 @@ class main ( wx.Frame ):
 		sbSizer2.Add( bSizer2, 1, wx.EXPAND, 5 )
 		
 		
-		bSright.Add( sbSizer2, 5, wx.EXPAND, 5 )
+		bSright.Add( sbSizer2, 7, wx.EXPAND, 5 )
 		
-		sbSizer1 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel1, wx.ID_ANY, u"发送区" ), wx.VERTICAL )
+		self.Send_panel = wx.Panel( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		sbSizer1 = wx.StaticBoxSizer( wx.StaticBox( self.Send_panel, wx.ID_ANY, u"发送区" ), wx.VERTICAL )
 		
 		bS_send = wx.BoxSizer( wx.VERTICAL )
 		
@@ -188,23 +217,27 @@ class main ( wx.Frame ):
 		
 		bSizer251 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.TPsend_chk = wx.CheckBox( self.m_panel1, wx.ID_ANY, u"循环发送", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.TPsend_chk.SetValue(True) 
+		self.TPsend_chk = wx.CheckBox( self.Send_panel, wx.ID_ANY, u"循环发送", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer251.Add( self.TPsend_chk, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.Second_txt = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Second_txt = wx.TextCtrl( self.Send_panel, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer251.Add( self.Second_txt, 0, wx.RIGHT|wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.Sec_lab = wx.StaticText( self.m_panel1, wx.ID_ANY, u"ms/次", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Sec_lab = wx.StaticText( self.Send_panel, wx.ID_ANY, u"ms/次", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.Sec_lab.Wrap( -1 )
 		bSizer251.Add( self.Sec_lab, 0, wx.TOP|wx.RIGHT|wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.HEXsend_chk = wx.CheckBox( self.m_panel1, wx.ID_ANY, u"HEX发送", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.HEXsend_chk = wx.CheckBox( self.Send_panel, wx.ID_ANY, u"HEX发送", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer251.Add( self.HEXsend_chk, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.RN_chk = wx.CheckBox( self.m_panel1, wx.ID_ANY, u"新行", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.RN_chk.SetValue(True) 
+		self.RN_chk = wx.CheckBox( self.Send_panel, wx.ID_ANY, u"新行", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer251.Add( self.RN_chk, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		self.HOST = wx.CheckBox( self.Send_panel, wx.ID_ANY, u"HOST", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer251.Add( self.HOST, 0, wx.ALL, 5 )
+		
+		self.Extra_func = wx.CheckBox( self.Send_panel, wx.ID_ANY, u"扩展", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer251.Add( self.Extra_func, 0, wx.ALL, 5 )
 		
 		
 		bSizer531.Add( bSizer251, 1, wx.EXPAND, 5 )
@@ -214,13 +247,13 @@ class main ( wx.Frame ):
 		
 		bSizer521 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.Send_txt = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Send_txt = wx.TextCtrl( self.Send_panel, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer521.Add( self.Send_txt, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.Clrsend_but = wx.Button( self.m_panel1, wx.ID_ANY, u"清空", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Clrsend_but = wx.Button( self.Send_panel, wx.ID_ANY, u"清空", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer521.Add( self.Clrsend_but, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.Send_but = wx.Button( self.m_panel1, wx.ID_ANY, u"发送", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Send_but = wx.Button( self.Send_panel, wx.ID_ANY, u"发送", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer521.Add( self.Send_but, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		
@@ -230,71 +263,122 @@ class main ( wx.Frame ):
 		sbSizer1.Add( bS_send, 1, wx.EXPAND, 5 )
 		
 		
-		bSright.Add( sbSizer1, 2, wx.EXPAND, 5 )
+		self.Send_panel.SetSizer( sbSizer1 )
+		self.Send_panel.Layout()
+		sbSizer1.Fit( self.Send_panel )
+		bSright.Add( self.Send_panel, 1, wx.EXPAND |wx.ALL, 1 )
 		
-		sbSizer17 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel1, wx.ID_ANY, u"字符串定义" ), wx.VERTICAL )
+		self.Extra_panel = wx.Panel( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.Extra_panel.Hide()
+		
+		sbSizer5 = wx.StaticBoxSizer( wx.StaticBox( self.Extra_panel, wx.ID_ANY, u"字符串定义" ), wx.VERTICAL )
+		
+		self.m_scrolledWindow1 = wx.ScrolledWindow( self.Extra_panel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.HSCROLL|wx.VSCROLL )
+		self.m_scrolledWindow1.SetScrollRate( 5, 5 )
+		bSizer252 = wx.BoxSizer( wx.VERTICAL )
 		
 		bSizer112 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.strButton1 = wx.Button( self.m_panel1, wx.ID_ANY, u"1", wx.DefaultPosition, wx.Size( 10,-1 ), 0 )
+		self.strButton1 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"1", wx.DefaultPosition, wx.Size( 10,-1 ), 0 )
 		self.strButton1.SetMinSize( wx.Size( 30,-1 ) )
 		self.strButton1.SetMaxSize( wx.Size( 100,-1 ) )
 		
 		bSizer112.Add( self.strButton1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.string1 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.string1 = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer112.Add( self.string1, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.strButton2 = wx.Button( self.m_panel1, wx.ID_ANY, u"2", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.strButton2.SetMinSize( wx.Size( 30,-1 ) )
-		
-		bSizer112.Add( self.strButton2, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-		
-		self.string2 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer112.Add( self.string2, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-		
-		self.strButton3 = wx.Button( self.m_panel1, wx.ID_ANY, u"3", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.strButton3 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"3", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.strButton3.SetMinSize( wx.Size( 30,-1 ) )
 		
 		bSizer112.Add( self.strButton3, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.string3 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.string3 = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer112.Add( self.string3, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
+		self.strButton5 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"5", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.strButton5.SetMinSize( wx.Size( 30,-1 ) )
 		
-		sbSizer17.Add( bSizer112, 1, wx.EXPAND, 5 )
+		bSizer112.Add( self.strButton5, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.string5 = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer112.Add( self.string5, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.strButton7 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"7", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.strButton7.SetMinSize( wx.Size( 30,-1 ) )
+		
+		bSizer112.Add( self.strButton7, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.string7 = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer112.Add( self.string7, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.strButton9 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"9", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.strButton9.SetMinSize( wx.Size( 30,-1 ) )
+		
+		bSizer112.Add( self.strButton9, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.string9 = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer112.Add( self.string9, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		bSizer252.Add( bSizer112, 1, wx.EXPAND, 5 )
 		
 		bSizer113 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.strButton4 = wx.Button( self.m_panel1, wx.ID_ANY, u"4", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.strButton2 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"2", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.strButton2.SetMaxSize( wx.Size( 30,-1 ) )
+		
+		bSizer113.Add( self.strButton2, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.string2 = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer113.Add( self.string2, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.strButton4 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"4", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.strButton4.SetMaxSize( wx.Size( 30,-1 ) )
 		
 		bSizer113.Add( self.strButton4, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.string4 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.string4 = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer113.Add( self.string4, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.strButton5 = wx.Button( self.m_panel1, wx.ID_ANY, u"5", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.strButton5.SetMaxSize( wx.Size( 30,-1 ) )
-		
-		bSizer113.Add( self.strButton5, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-		
-		self.string5 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer113.Add( self.string5, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-		
-		self.strButton6 = wx.Button( self.m_panel1, wx.ID_ANY, u"6", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.strButton6 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"6", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.strButton6.SetMaxSize( wx.Size( 30,-1 ) )
 		
 		bSizer113.Add( self.strButton6, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.string6 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.string6 = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer113.Add( self.string6, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
+		self.strButton8 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"8", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.strButton8.SetMaxSize( wx.Size( 30,-1 ) )
 		
-		sbSizer17.Add( bSizer113, 1, wx.EXPAND, 5 )
+		bSizer113.Add( self.strButton8, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.string8 = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer113.Add( self.string8, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.strButton10 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"10", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.strButton10.SetMaxSize( wx.Size( 30,-1 ) )
+		
+		bSizer113.Add( self.strButton10, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.string10 = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer113.Add( self.string10, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		
-		bSright.Add( sbSizer17, 2, wx.EXPAND, 5 )
+		bSizer252.Add( bSizer113, 1, wx.EXPAND, 5 )
+		
+		
+		self.m_scrolledWindow1.SetSizer( bSizer252 )
+		self.m_scrolledWindow1.Layout()
+		bSizer252.Fit( self.m_scrolledWindow1 )
+		sbSizer5.Add( self.m_scrolledWindow1, 1, wx.EXPAND |wx.ALL, 1 )
+		
+		
+		self.Extra_panel.SetSizer( sbSizer5 )
+		self.Extra_panel.Layout()
+		sbSizer5.Fit( self.Extra_panel )
+		bSright.Add( self.Extra_panel, 3, wx.EXPAND |wx.ALL, 1 )
 		
 		
 		bSizer26.Add( bSright, 1, wx.EXPAND|wx.ALL, 5 )
@@ -341,7 +425,7 @@ class main ( wx.Frame ):
 		self.m_panel1.SetSizer( bSizer24 )
 		self.m_panel1.Layout()
 		bSizer24.Fit( self.m_panel1 )
-		bSizer25.Add( self.m_panel1, 1, wx.EXPAND|wx.ALL, 5 )
+		bSizer25.Add( self.m_panel1, 5, wx.EXPAND|wx.ALL, 1 )
 		
 		
 		self.SetSizer( bSizer25 )
@@ -350,7 +434,7 @@ class main ( wx.Frame ):
 		self.Centre( wx.BOTH )
 		
 		# Connect Events
-		self.Port_cmb.Bind( wx.EVT_COMBOBOX_DROPDOWN, self.PortDropdown )
+		self.Port_cmb.Bind( wx.EVT_COMBOBOX, self.PortDropdown )
 		self.Port_but.Bind( wx.EVT_BUTTON, self.Open_port )
 		self.DTR_chk.Bind( wx.EVT_CHECKBOX, self.CH_DTR )
 		self.RTC_chk.Bind( wx.EVT_CHECKBOX, self.CH_RTC )
@@ -359,14 +443,21 @@ class main ( wx.Frame ):
 		self.TPsend_chk.Bind( wx.EVT_CHECKBOX, self.SendLoopClick )
 		self.Second_txt.Bind( wx.EVT_TEXT, self.TextSecondChange )
 		self.HEXsend_chk.Bind( wx.EVT_CHECKBOX, self.bt_hexsend )
+		self.RN_chk.Bind( wx.EVT_CHECKBOX, self.NewLineClick )
+		self.HOST.Bind( wx.EVT_CHECKBOX, self.HostClick )
+		self.Extra_func.Bind( wx.EVT_CHECKBOX, self.ExtraFunClick )
 		self.Clrsend_but.Bind( wx.EVT_BUTTON, self.bt_clrsend )
 		self.Send_but.Bind( wx.EVT_BUTTON, self.bt_send )
 		self.strButton1.Bind( wx.EVT_BUTTON, self.strButton1Click )
-		self.strButton2.Bind( wx.EVT_BUTTON, self.strButton2Click )
 		self.strButton3.Bind( wx.EVT_BUTTON, self.strButton3Click )
-		self.strButton4.Bind( wx.EVT_BUTTON, self.strButton4Click )
 		self.strButton5.Bind( wx.EVT_BUTTON, self.strButton5Click )
+		self.strButton7.Bind( wx.EVT_BUTTON, self.strButton7Click )
+		self.strButton9.Bind( wx.EVT_BUTTON, self.strButton9Click )
+		self.strButton2.Bind( wx.EVT_BUTTON, self.strButton2Click )
+		self.strButton4.Bind( wx.EVT_BUTTON, self.strButton5Click )
 		self.strButton6.Bind( wx.EVT_BUTTON, self.strButton6Click )
+		self.strButton8.Bind( wx.EVT_BUTTON, self.strButton8Click )
+		self.strButton10.Bind( wx.EVT_BUTTON, self.strButton10Click )
 		self.Clear_but.Bind( wx.EVT_BUTTON, self.clearClick )
 	
 	def __del__( self ):
@@ -401,6 +492,15 @@ class main ( wx.Frame ):
 	def bt_hexsend( self, event ):
 		event.Skip()
 	
+	def NewLineClick( self, event ):
+		event.Skip()
+	
+	def HostClick( self, event ):
+		event.Skip()
+	
+	def ExtraFunClick( self, event ):
+		event.Skip()
+	
 	def bt_clrsend( self, event ):
 		event.Skip()
 	
@@ -410,19 +510,29 @@ class main ( wx.Frame ):
 	def strButton1Click( self, event ):
 		event.Skip()
 	
-	def strButton2Click( self, event ):
-		event.Skip()
-	
 	def strButton3Click( self, event ):
-		event.Skip()
-	
-	def strButton4Click( self, event ):
 		event.Skip()
 	
 	def strButton5Click( self, event ):
 		event.Skip()
 	
+	def strButton7Click( self, event ):
+		event.Skip()
+	
+	def strButton9Click( self, event ):
+		event.Skip()
+	
+	def strButton2Click( self, event ):
+		event.Skip()
+	
+	
 	def strButton6Click( self, event ):
+		event.Skip()
+	
+	def strButton8Click( self, event ):
+		event.Skip()
+	
+	def strButton10Click( self, event ):
 		event.Skip()
 	
 	def clearClick( self, event ):

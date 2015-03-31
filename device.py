@@ -24,6 +24,7 @@ class MyCom(object):
         self.l_serial.parity = self.parity
         self.l_serial.stopbits = int(self.stopbits)
         self.l_serial.timeout = 2
+        #self.l_serial.writeTimeout = 0
         self.l_serial.open()
 
         if self.l_serial.isOpen():
@@ -36,10 +37,10 @@ class MyCom(object):
         if not self.waitEnd is None:
             self.waitEnd.wait()
     def SetStopEvent(self):
-        print(" self.waitEnd=",self.waitEnd)
-        if not self.waitEnd is None:
-            self.waitEnd.set()
-            print("self.waitEnd.isSet()=",self.waitEnd.isSet())
+        # print(" self.waitEnd=",self.waitEnd)
+        # if not self.waitEnd is None:
+        #     self.waitEnd.set()
+        #     print("self.waitEnd.isSet()=",self.waitEnd.isSet())
         self.alive = False
         self.stop()
 
